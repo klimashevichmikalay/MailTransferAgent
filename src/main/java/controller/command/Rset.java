@@ -22,15 +22,8 @@ public class Rset implements ICommand {
             cl.sendMessage(SYNTAX_ERR, "Syntax error in RSET");
             return;
         }
-
-        if (rs.retransmit(cl, SUCCES)) {
-            cl.getMailInfo().clearInfo();
-            cl.sendMessage(SUCCES, "OK");
-            cl.setClientState(ClientState.COMMUNICATION);
-        }
-    }
-
-    private boolean isCorrectCommand(String str, String regexp) {
-        return str.matches(regexp);
+        cl.getMailInfo().clearInfo();
+        cl.sendMessage(SUCCES, "OK");
+        cl.setClientState(ClientState.COMMUNICATION);
     }
 }

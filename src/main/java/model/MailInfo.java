@@ -30,11 +30,6 @@ public class MailInfo {
         requiredCommands.add(point);
     }
 
-    public boolean checkSyntax() {
-
-        return true;
-    }
-
     public boolean isContainsMinCommands() {
         if (commandsMailInfoList.isEmpty()) {
             return false;
@@ -42,7 +37,7 @@ public class MailInfo {
         return commandsMailInfoList.containsAll(requiredCommands);
     }
 
-    private String getFirstWord(String str) {
+    public String getFirstWord(String str) {
         try {
             return str.split(":", 2)[0];
         } catch (RuntimeException e) {

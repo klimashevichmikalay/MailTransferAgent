@@ -14,11 +14,10 @@ import javax.swing.JTextArea;
 
 public class ClientView {
 
-    private JFrame frame;
-    private JPanel logPanel;
-    private JPanel buttonsPanel;
+    private final JFrame frame;
+    private final JPanel logPanel;
     private JTextArea logTextArea;
-    private JButton clearLog;
+    private final JButton clearLog;
     private final JPanel framePanel;
 
     public ClientView() {

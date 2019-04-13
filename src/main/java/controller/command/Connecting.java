@@ -6,22 +6,31 @@ import model.RelaySocket;
 
 public class Connecting implements ICommand {
 
-    private final static int SUCCES = 220;
-    private final static int BSC = 503;
-    private final static int ERR = 211;
+    private final int BSC = 503;
+    private final long TIME_OUT = 120000;
+    private final int FAIL_IN_RELAY = 211;
+    private final int SUCCES = 220;
 
     @Override
     public void execute(ClientListener cl, RelaySocket rs) {
+
         if (cl.getClientState() != ClientState.CONNECTION) {
             cl.sendMessage(BSC, "Bad sequence of commands.");
             return;
         }
 
-        if (rs.retransmit("", SUCCES)) {
+        CommandTimer timer = new CommandTimer(cl, TIME_OUT);
+        cl.sendMessage(SUCCES, "Sender OK.");
+
+        if (rs != null && rs.getCodeMsg() == SUCCES) {
             cl.setClientState(ClientState.COMMUNICATION);
-            cl.sendMessage(SUCCES, "Sender OK");
-        } else {
-            cl.sendMessage(ERR, "Could not connect to relay server.");
+        } else if (rs != null) {
+            cl.sendMessage(FAIL_IN_RELAY, "Cannot connect to relay.");
         }
-    }   
+
+        if (rs == null) {
+            cl.setClientState(ClientState.COMMUNICATION);
+        }
+        timer.stop();
+    }
 }

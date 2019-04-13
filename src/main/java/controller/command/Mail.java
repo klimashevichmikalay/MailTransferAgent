@@ -1,7 +1,5 @@
 package controller.command;
 
-import controller.command.ICommand;
-import controller.command.ICommand;
 import model.ClientListener;
 import model.ClientState;
 import model.RelaySocket;
@@ -11,9 +9,11 @@ public class Mail implements ICommand {
     private final static int SUCCES = 250;
     private final static int BSC = 503;
     private final static int SYNTAX_ERR = 501;
+    private final static int FAIL_IN_RELAY = 211;
     private final String regExpMail = "\\A[mM]{1}[aA]{1}[iI]{1}[lL]{1}\\s{1}"
             + "[fF]{1}[rR]{1}[oO]{1}[mM]{1}:{1}<([a-zA-Z0-9._]{1,63}[@]{1}){1}"
             + "[a-z]{2,6}.{1}[a-z]{2,3}>{1}\\z";
+    private final long TIME_OUT = 300000;
 
     @Override
     public void execute(ClientListener cl, RelaySocket rs) {
@@ -28,14 +28,13 @@ public class Mail implements ICommand {
         }
         cl.getMailInfo().clearInfo();
 
-        //время ответа - 5 мин   
-        if (rs.retransmit(cl, SUCCES)) {
+        CommandTimer timer = new CommandTimer(cl, TIME_OUT);
+        if (rs == null || rs.retransmit(cl.getLastMessage(), SUCCES)) {
             cl.setClientState(ClientState.MAIL);
             cl.sendMessage(SUCCES, "OK");
+        } else {
+            cl.sendMessage(FAIL_IN_RELAY, "ERROR in RELAY MAIL.");
         }
-    }
-
-    public boolean isCorrectCommand(String str, String regexp) {
-        return str.matches(regexp);
+        timer.stop();
     }
 }

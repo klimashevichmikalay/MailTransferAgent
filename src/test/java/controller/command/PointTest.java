@@ -47,7 +47,7 @@ public class PointTest {
         doReturn(mailInfo).when(cl).getMailInfo();
         Mockito.doNothing().when(mailInfo).clearInfo();
         Mockito.doNothing().when(mailInfo).add(".");
-        doReturn(mailInfoList).when(mailInfo).getMailInfoList();       
+        doReturn(mailInfoList).when(mailInfo).getMailInfoList();
         point = new Point();
     }
 
@@ -60,7 +60,7 @@ public class PointTest {
     public void testExecute1() throws Exception {
         doReturn(ClientState.GET_MAIL_INFO).when(cl).getClientState();
         doReturn(true).when(mailInfo).isContainsMinCommands();
-        doReturn(true).when(mailInfo).checkSyntax();
+        doReturn(true).when(mailInfo).isContainsMinCommands();
         doReturn(true).when(rs).retransmit(mailInfoList, SUCCES);
         point.execute(cl, rs);
         verify(cl, times(1)).sendMessage(SUCCES, "message accepted for delivery");
@@ -86,16 +86,16 @@ public class PointTest {
     public void testExecute4() throws Exception {
         doReturn(ClientState.GET_MAIL_INFO).when(cl).getClientState();
         doReturn(true).when(mailInfo).isContainsMinCommands();
-        doReturn(false).when(mailInfo).checkSyntax();
+        doReturn(false).when(mailInfo).isContainsMinCommands();
         point.execute(cl, rs);
-        verify(cl, times(1)).sendMessage(SYNTAX_ERROR, "Syntax error in the letter.");
+        verify(cl, times(1)).sendMessage(554, "Little information in the letter.");
     }
 
     @Test
     public void testExecute5() throws Exception {
         doReturn(ClientState.GET_MAIL_INFO).when(cl).getClientState();
         doReturn(true).when(mailInfo).isContainsMinCommands();
-        doReturn(true).when(mailInfo).checkSyntax();
+        doReturn(true).when(mailInfo).isContainsMinCommands();
         doReturn(false).when(rs).retransmit(mailInfoList, SUCCES);
         point.execute(cl, rs);
         verify(cl, times(1)).sendMessage(TRANCSACTION_FAILED, "Transaction failed.");

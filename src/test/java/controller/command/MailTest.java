@@ -35,11 +35,11 @@ public class MailTest {
     }
 
     @BeforeClass
-    public static void setUpClass() {        
+    public static void setUpClass() {
     }
 
     @AfterClass
-    public static void tearDownClass() {        
+    public static void tearDownClass() {
     }
 
     @Before
@@ -89,7 +89,7 @@ public class MailTest {
     public void testExecute1() throws Exception {
         doReturn(ClientState.COMMUNICATION).when(cl).getClientState();
         doReturn("MAIL FROM:<klimashevich.mikalay@mail.ru>").when(cl).getLastMessage();
-        doReturn(true).when(rs).retransmit(cl, SUCCES);
+        doReturn(true).when(rs).retransmit("MAIL FROM:<klimashevich.mikalay@mail.ru>", SUCCES);
         mail.execute(cl, rs);
         verify(cl, times(1)).sendMessage(SUCCES, "OK");
     }
@@ -111,9 +111,10 @@ public class MailTest {
 
     @Test
     public void testExecute4() throws Exception {
+        doReturn("").when(cl).getLastMessage();
         doReturn(ClientState.RCPT).when(cl).getClientState();
         doReturn("DATA").when(cl).getLastMessage();
-        doReturn(false).when(rs).retransmit(cl, SUCCES);
+        doReturn(false).when(rs).retransmit("", SUCCES);
         mail.execute(cl, rs);
         verify(cl, never()).sendMessage(BSC, "bad sequence of commands.");
     }
@@ -130,8 +131,7 @@ public class MailTest {
     public void testExecute6() throws Exception {
         doReturn(ClientState.RCPT).when(cl).getClientState();
         doReturn("").when(cl).getLastMessage();
-        doReturn(false).when(rs).retransmit(cl, SUCCES);
         mail.execute(cl, rs);
-        verify(rs, never()).retransmit(cl, SUCCES);
+        verify(rs, never()).retransmit("", SUCCES);
     }
 }

@@ -94,7 +94,7 @@ public class RcptTest {
     public void testExecute1() throws Exception {
         doReturn(ClientState.MAIL).when(cl).getClientState();
         doReturn("RCPT TO:<klimashevich.mikalay@mail.ru>").when(cl).getLastMessage();
-        doReturn(true).when(rs).retransmit(cl, SUCCES);
+        doReturn(true).when(rs).retransmit("RCPT TO:<klimashevich.mikalay@mail.ru>", SUCCES);
         rcpt.execute(cl, rs);
         verify(cl, times(1)).sendMessage(SUCCES, "OK");
     }
@@ -103,7 +103,7 @@ public class RcptTest {
     public void testExecute2() throws Exception {
         doReturn(ClientState.RCPT).when(cl).getClientState();
         doReturn("RCPT TO:<klimashevich.mikalay@mail.ru>").when(cl).getLastMessage();
-        doReturn(true).when(rs).retransmit(cl, SUCCES);
+        doReturn(true).when(rs).retransmit("RCPT TO:<klimashevich.mikalay@mail.ru>", SUCCES);
         rcpt.execute(cl, rs);
         verify(cl, times(1)).sendMessage(SUCCES, "OK");
     }
@@ -127,7 +127,7 @@ public class RcptTest {
     public void testExecute5() throws Exception {
         doReturn(ClientState.MAIL).when(cl).getClientState();
         doReturn("RCPT TO:<klimashevich.mikalay@mail.ru>").when(cl).getLastMessage();
-        doReturn(false).when(rs).retransmit(cl, SUCCES);
+        doReturn(false).when(rs).retransmit("RCPT TO:<klimashevich.mikalay@mail.ru>", SUCCES);
         rcpt.execute(cl, rs);
         verify(cl, times(0)).sendMessage(SUCCES, "OK");
     }

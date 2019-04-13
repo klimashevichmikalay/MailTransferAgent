@@ -4,6 +4,7 @@ import model.ClientListener;
 import controller.command.CommandsNames;
 
 public class ClientParser {
+
     private String msg;
 
     public String parseClient(ClientListener cl) {

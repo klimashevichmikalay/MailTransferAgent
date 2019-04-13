@@ -7,6 +7,7 @@ import model.RelaySocket;
 
 public class Point implements ICommand {
 
+    private final long TIME_OUT = 600000;
     private final static int BSC = 503;
     private final static int SUCCES = 250;
     private final static int TRANCSACTION_FAILED = 554;
@@ -18,7 +19,6 @@ public class Point implements ICommand {
             cl.sendMessage(BSC, "bad sequence of commands.");
             return;
         }
-        //время ответа - 10 мин
 
         MailInfo mi = cl.getMailInfo();
         mi.add(".");
@@ -27,16 +27,13 @@ public class Point implements ICommand {
             return;
         }
 
-        if (!mi.checkSyntax()) {
-            cl.sendMessage(SYNTAX_ERROR, "Syntax error in the letter.");
-            return;
-        }
-
-        if (rs.retransmit(cl.getMailInfo().getMailInfoList(), SUCCES)) {
+        CommandTimer timer = new CommandTimer(cl, TIME_OUT);
+        if (rs == null || rs.retransmit(cl.getMailInfo().getMailInfoList(), SUCCES)) {
             cl.setClientState(ClientState.COMMUNICATION);
             cl.sendMessage(SUCCES, "message accepted for delivery");
         } else {
             cl.sendMessage(TRANCSACTION_FAILED, "Transaction failed.");
         }
+        timer.stop();
     }
 }

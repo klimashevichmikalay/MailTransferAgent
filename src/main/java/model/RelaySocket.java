@@ -11,40 +11,24 @@ import modelsListeners.ClientView;
 
 public class RelaySocket {
 
-    private boolean isCreateSucces;
     private Socket relaySocket;
     private BufferedReader relayIn;
     private BufferedWriter relayOut;
-    private String lastMessage;
-    private final String HOST = "smtp.gmail.com.";
-    private final static int PORT = 465;
-    private final static int SUCCES_AUTH = 235;
-    private final static int SUCCES = 250;
-    private final static int ERR = 211;
-    private final static String NEW_LINE = System.getProperty("line.separator");
-    ClientView view;
-    private final static String LOGIN = "a2xpbWFzaGV2aWNoLm1pa2FsYXlAZ21haWwuY29t";
-    private String PASSWORD = "cmprejEyMzQ=";
+    private final int ERR = 211;
+    private final String NEW_LINE = System.getProperty("line.separator");
+    private final ClientView view;
+    private final String RELAY_HOST;
+    private final int RELAY_PORT;
 
-    RelaySocket(ClientView viewCopy) {
+    RelaySocket(ClientView viewCopy, String[] args) {
         this.view = viewCopy;
-        isCreateSucces = true;
+        RELAY_HOST = args[1];
+        RELAY_PORT = Integer.parseInt((args[2]));
         createRelaySocket();
     }
 
-    private void createRelaySocket() {
-        try {
-            SslRMIClientSocketFactory sslf = new SslRMIClientSocketFactory();
-            relaySocket = sslf.createSocket(HOST, PORT);
-        } catch (Exception e) {
-            isCreateSucces = false;
-        }
-        try {
-            relayIn = new BufferedReader(new InputStreamReader(relaySocket.getInputStream()));
-            relayOut = new BufferedWriter(new OutputStreamWriter(relaySocket.getOutputStream()));
-        } catch (IOException ex) {
-            isCreateSucces = false;
-        }
+    public String getRelayHost() {
+        return RELAY_HOST;
     }
 
     private Boolean sendMessage(String msg) {
@@ -54,7 +38,7 @@ public class RelaySocket {
         } catch (IOException ex) {
             return false;
         }
-        view.setMesage(NEW_LINE + "RC: " + msg);
+        view.setMesage(NEW_LINE + "RELAY MSG: " + msg);
         return true;
     }
 
@@ -63,90 +47,15 @@ public class RelaySocket {
             return null;
         }
         String msg = null;
-        while (msg == null) {
-            try {
-                if (((msg = relayIn.readLine()) == null)) {
-                    continue;
-                } else {
-                    break;
-                }
-            } catch (IOException ex) {
-            }
+        try {
+            msg = relayIn.readLine();
+        } catch (IOException ex) {
         }
-        this.lastMessage = msg;
-        view.setMesage(NEW_LINE + "RS: " + msg);
+        view.setMesage(NEW_LINE + "RELAY ANSWR: " + msg);
         return msg;
     }
 
-    public int authorization() {
-
-        if (sendMessage("helo 127.0.0.1")) {
-            if (getCodeMsg() != RelaySocket.SUCCES) {
-                return ERR;
-            }
-        }
-
-        if (sendMessage("auth login")) {
-            if (getCodeMsg() != 334) {
-                return ERR;
-            }
-        }
-
-        if (sendMessage(LOGIN)) {
-            if (getCodeMsg() != 334) {
-                return ERR;
-            }
-        }
-        if (sendMessage(PASSWORD)) {
-            if (getCodeMsg() != SUCCES_AUTH) {
-                return ERR;
-            }
-        }
-        return SUCCES;
-    }
-
-    public boolean retransmit(ClientListener cl, int SUCCES) {
-        if (!isCreateSucces) {
-            cl.sendMessage(ERR, "Fail in connect to relay.");
-        }
-        sendMessage(cl.getLastMessage());
-
-        int relayResult;
-        if (((relayResult = getCodeMsg()) != SUCCES)) {
-            cl.sendMessage(relayResult, getLastMessage());
-            return false;
-        }
-        return true;
-    }
-
-    public boolean retransmit(String msg, int SUCCES) {
-        sendMessage(msg);
-        int relayResult;
-        if (((relayResult = getCodeMsg()) != SUCCES)) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean retransmit(ArrayList<String> mailInfoList, int SUCCES) {
-        for (String s : mailInfoList) {
-            sendMessage(s);
-        }
-        if ((getCodeMsg() != SUCCES)) {
-            return false;
-        }
-        return true;
-    }
-
-    public void closeRelay() {
-        try {
-            relaySocket.close();
-        } catch (IOException ex) {
-        }
-        view.setMesage(NEW_LINE + "relaySocket closed.");
-    }
-
-    private int getCodeMsg() {
+    public int getCodeMsg() {
         String msg = getMessage();
         if (msg != null) {
             return Integer.parseInt((msg.substring(0, 3)));
@@ -154,7 +63,41 @@ public class RelaySocket {
         return ERR;
     }
 
-    public String getLastMessage() {
-        return this.lastMessage;
+    public boolean retransmit(String msg, int SUCCES) {
+        sendMessage(msg);
+        int code = 0;
+        while (code != ERR && code != SUCCES) {
+            code = getCodeMsg();
+        }
+        return code == SUCCES;
+    }
+
+    public boolean retransmit(ArrayList<String> mailInfoList, int SUCCES) {
+        mailInfoList.stream().forEach((s) -> {
+            sendMessage(s);
+        });
+        return getCodeMsg() == SUCCES;
+    }
+
+    private void createRelaySocket() {
+
+        try {
+            relaySocket = new Socket(RELAY_HOST, RELAY_PORT);
+        } catch (IOException ex) {
+        }
+
+        try {
+            relayIn = new BufferedReader(new InputStreamReader(relaySocket.getInputStream()));
+            relayOut = new BufferedWriter(new OutputStreamWriter(relaySocket.getOutputStream()));
+        } catch (IOException ex) {
+        }
+    }
+
+    public void closeRelay() {
+        try {
+            relaySocket.close();
+        } catch (IOException ex) {
+        }
+        view.setMesage(NEW_LINE + "RelaySocket closed.");
     }
 }

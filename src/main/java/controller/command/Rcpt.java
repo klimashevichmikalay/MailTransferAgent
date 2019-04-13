@@ -10,6 +10,8 @@ public class Rcpt implements ICommand {
     private final static int BSC = 503;
     private final static int UUA = 550;
     private final static int SYNTAX_ERR = 501;
+    private final static int FAIL_IN_RELAY = 211;
+    private final long TIME_OUT = 300000;
     private final String regExpRcpt = "\\A[rR]{1}[cC]{1}[pP]{1}[tT]{1}\\s{1}"
             + "[tT]{1}[oO]{1}:{1}<([a-zA-Z0-9._]{1,63}[@]{1}){1}[a-z]{2,6}.{1}"
             + "[a-z]{2,3}>{1}\\z";
@@ -25,14 +27,13 @@ public class Rcpt implements ICommand {
             return;
         }
 
-        //время ответа - 5 мин  
-        if (rs.retransmit(cl, SUCCES)) {
+        CommandTimer timer = new CommandTimer(cl, TIME_OUT);
+        if (rs == null || rs.retransmit(cl.getLastMessage(), SUCCES)) {
             cl.setClientState(ClientState.RCPT);
             cl.sendMessage(SUCCES, "OK");
+        } else {
+            cl.sendMessage(FAIL_IN_RELAY, "ERROR in RELAY RCPT.");
         }
-    }
-
-    public boolean isCorrectCommand(String str, String regexp) {
-        return str.matches(regexp);
+        timer.stop();
     }
 }

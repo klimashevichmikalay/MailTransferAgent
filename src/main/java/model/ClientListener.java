@@ -1,7 +1,6 @@
 package model;
 
 import controller.ClientController;
-import modelsListeners.ClientView;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,6 +10,8 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelsListeners.ClientParser;
+import modelsListeners.ClientView;
+import modelsListeners.SMTPServer;
 
 public class ClientListener implements Runnable {
 
@@ -22,29 +23,33 @@ public class ClientListener implements Runnable {
     private final Thread t;
     private volatile String lastMessage;
     private volatile ClientState state;
-    private static ClientController clCtrl;
-    private static ClientParser clPrsr;
+    private final ClientController clCtrl;
+    private final ClientParser clPrsr;
     private static final String POINT = ".";
     MailInfo mailInfo;
     private final static String NEW_LINE = System.getProperty("line.separator");
 
-    public ClientListener(Socket clientSocketCopy) {
+    public ClientListener(Socket clientSocketCopy, String[] args) {
 
         this.clientSocket = clientSocketCopy;
         clPrsr = new ClientParser();
-        ClientListener.clCtrl = new ClientController();
+        clCtrl = new ClientController();
         createView();
         try {
             createWriteRead();
         } catch (IOException ex) {
-            Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
         }
         mailInfo = new MailInfo();
         state = ClientState.CONNECTION;
-        lastMessage = "";
+        lastMessage = "220 Sender OK";
         t = new Thread(this, "ClientListener");
+        view.setMesage("SERVER_PORT: " + SMTPServer.getServerPort());
 
-        relaySocket = new RelaySocket(this.view);
+        if (args.length == 1) {
+            relaySocket = null;
+        } else {
+            relaySocket = new RelaySocket(this.view, args);
+        }
     }
 
     @Override
@@ -52,10 +57,9 @@ public class ClientListener implements Runnable {
         clCtrl.execute(clPrsr.parseClient(this), this, this.relaySocket);
         while (!(this.clientSocket.isClosed())) {
             try {
-                if (((lastMessage = in.readLine()) == null)) {
-                    continue;
-                }
+                lastMessage = in.readLine();
             } catch (IOException ex) {
+                continue;
             }
             view.setMesage(NEW_LINE + "C: " + lastMessage);
             if (this.state == ClientState.GET_MAIL_INFO && !lastMessage.equals(POINT)) {
@@ -67,6 +71,11 @@ public class ClientListener implements Runnable {
     }
 
     public void sendMessage(int code, String msg) {
+
+        if (clientSocket.isClosed()) {
+            return;
+        }
+
         msg = Integer.toString(code) + " " + msg;
         try {
             out.write(msg + NEW_LINE);
@@ -74,15 +83,6 @@ public class ClientListener implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, ex);
             return;
-        }
-        view.setMesage(NEW_LINE + "S: " + msg + NEW_LINE);
-    }
-
-    public void sendMessage(String msg) {
-        try {
-            out.write(msg + NEW_LINE);
-            out.flush();
-        } catch (IOException ex) {
         }
         view.setMesage(NEW_LINE + "S: " + msg + NEW_LINE);
     }

@@ -1,53 +1,40 @@
 //дописать закрытие отдельного клиента
 package modelsListeners;
 
-import controller.ClientController;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.ClientList;
-import controller.ClientListController;
-import controller.ClientListControllerOperations;
 import model.ClientListener;
 
 public class SMTPServer {
 
-    private ServerSocket serverSocket;
-    private int PORT = 25;
-    private static ClientList clList;
-    private static ClientListController clListCtrl;
-    private static ClientParser clPrsr;
-    private static ClientController clControl;
+    private static ServerSocket serverSocket;
+    private final int CURRENT_PORT;
+    private final ClientParser clPrsr;
 
-    public SMTPServer() {
-        clListCtrl = new ClientListController();
+    public SMTPServer(String[] args) {
         clPrsr = new ClientParser();
-        clList = new ClientList();
-        clList.addClientListView(new ClientListView());
-    }
-
-    public void startServer() {
-
+        CURRENT_PORT = Integer.parseInt((args[0]));
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = new ServerSocket(CURRENT_PORT);
         } catch (IOException ex) {
-            System.err.println("Fail in created server.");
         }
-        this.acceptClients();
+        this.acceptClients(args);
     }
 
-    private void acceptClients() {
-        while (!this.serverSocket.isClosed()) {
+    private void acceptClients(String[] args) {
+
+        while (!SMTPServer.serverSocket.isClosed()) {
             Socket clientSocket;
             try {
                 clientSocket = serverSocket.accept();
             } catch (IOException ex) {
                 continue;
             }
-            ClientListener clLstnr = new ClientListener(clientSocket);
-            clListCtrl.execute(clList, ClientListControllerOperations.ADD, clLstnr, 0);
+
+            ClientListener clLstnr = new ClientListener(clientSocket, args);
             clLstnr.start();
         }
     }
@@ -55,13 +42,18 @@ public class SMTPServer {
     public void closeServer() {
         try {
             serverSocket.close();
+
         } catch (IOException ex) {
-            Logger.getLogger(SMTPServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SMTPServer.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
-        clListCtrl.execute(clList, ClientListControllerOperations.CLOSE_ALL, null, 0);
     }
 
     public ServerSocket getServerSocket() {
-        return this.serverSocket;
+        return SMTPServer.serverSocket;
+    }
+
+    public static int getServerPort() {
+        return serverSocket.getLocalPort();
     }
 }

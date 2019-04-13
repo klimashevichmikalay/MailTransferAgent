@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -21,7 +20,7 @@ public class EhloTest {//
 
     private Ehlo ehlo;
     private final ClientListener cl;
-    private final RelaySocket rs;
+    private RelaySocket rs;
     MailInfo mailInfo;
     private final int SUCCES = 250;
     private final int BSC = 503;
@@ -46,6 +45,7 @@ public class EhloTest {//
         ehlo = new Ehlo();
         doReturn(mailInfo).when(cl).getMailInfo();
         Mockito.doNothing().when(mailInfo).clearInfo();
+        rs = Mockito.mock(RelaySocket.class);
     }
 
     @After
@@ -54,10 +54,20 @@ public class EhloTest {//
     }
 
     @Test
+    public void testExecute0() throws Exception {
+
+        doReturn(ClientState.COMMUNICATION).when(cl).getClientState();
+        rs = null;
+        ehlo.execute(cl, rs);
+        verify(cl, times(1)).sendMessage(SUCCES, "OK");
+    }
+
+    @Test
     public void testExecute1() throws Exception {
 
         doReturn(ClientState.COMMUNICATION).when(cl).getClientState();
-        doReturn(SUCCES).when(rs).authorization();
+        doReturn("").when(cl).getLastMessage();
+        doReturn(true).when(rs).retransmit("", SUCCES);
         ehlo.execute(cl, rs);
         verify(cl, times(1)).sendMessage(SUCCES, "OK");
     }
@@ -65,24 +75,16 @@ public class EhloTest {//
     @Test
     public void testExecute2() throws Exception {
         doReturn(ClientState.MAIL).when(cl).getClientState();
-        doReturn(SUCCES).when(rs).authorization();
         ehlo.execute(cl, rs);
         verify(cl, times(1)).sendMessage(BSC, "bad sequence of commands.");
     }
 
     @Test
     public void testExecute3() throws Exception {
-        doReturn(ClientState.MAIL).when(cl).getClientState();
-        doReturn(SUCCES).when(rs).authorization();
-        ehlo.execute(cl, rs);
-        verify(rs, never()).authorization();
-    }
-
-    @Test
-    public void testExecute4() throws Exception {
         doReturn(ClientState.COMMUNICATION).when(cl).getClientState();
-        doReturn(-99).when(rs).authorization();
+        doReturn("").when(cl).getLastMessage();
+        doReturn(false).when(rs).retransmit("", SUCCES);
         ehlo.execute(cl, rs);
-        verify(cl, times(1)).sendMessage(ERR, "Unable to pass authorization on the relay server.");
-    }
+        verify(cl, times(1)).sendMessage(ERR, "Error in relay EHLO.");
+    }   
 }
