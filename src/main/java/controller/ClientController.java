@@ -9,8 +9,10 @@ import model.RelaySocket;
 
 public class ClientController {
 
+    //карта комманд
     private final Map<String, ICommand> commands;
-
+   //добавление комманд, более подробно каждая команда 
+   //описана в своем файле
     public ClientController() {
         commands = new HashMap<>();
         commands.put(CommandsNames.connecting, new Connecting());
@@ -27,6 +29,13 @@ public class ClientController {
         commands.put(CommandsNames.vrfy, new Vrfy());
     }
 
+    //сервер при подключении создает объект
+    //класса ClientListener. В этом объекте
+    //в отдельном потоке обрабатываются комманды клиента.
+    //Этот объект содержит в себе объект
+    //класса ClientController(он в текущем файле)
+    //И чтобы обработать последнюю команду от клиента, мы выполняем  вот этот
+    //метод execute(String command, ClientListener cl, RelaySocket rs).
     public void execute(String command, ClientListener cl, RelaySocket rs) {
         commands.get(command).execute(cl, rs);
     }

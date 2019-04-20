@@ -20,7 +20,7 @@ public class RelaySocket {
     private final String RELAY_HOST;
     private final int RELAY_PORT;
 
-    RelaySocket(ClientView viewCopy, String[] args) {
+    public RelaySocket(ClientView viewCopy, String[] args) {
         this.view = viewCopy;
         RELAY_HOST = args[1];
         RELAY_PORT = Integer.parseInt((args[2]));
@@ -83,10 +83,6 @@ public class RelaySocket {
 
         try {
             relaySocket = new Socket(RELAY_HOST, RELAY_PORT);
-        } catch (IOException ex) {
-        }
-
-        try {
             relayIn = new BufferedReader(new InputStreamReader(relaySocket.getInputStream()));
             relayOut = new BufferedWriter(new OutputStreamWriter(relaySocket.getOutputStream()));
         } catch (IOException ex) {

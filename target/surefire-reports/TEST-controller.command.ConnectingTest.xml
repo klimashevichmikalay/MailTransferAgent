@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="5" failures="0" name="controller.command.ConnectingTest" time="0.375" errors="0" skipped="0">
+<testsuite tests="5" failures="0" name="controller.command.ConnectingTest" time="0.578" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_201\jre\bin"/>
@@ -30,7 +30,7 @@
     <property name="net.sourceforge.cobertura.datafile" value="C:\Users\Garant\Documents\NetBeansProjects\MailTransferAgentSMTP\target\cobertura\cobertura.ser"/>
     <property name="classworlds.conf" value="E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin\..\bin\m2.conf"/>
     <property name="sun.jnu.encoding" value="Cp1251"/>
-    <property name="java.library.path" value="C:\Program Files\Java\jdk1.8.0_201\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Java\jdk1.6.0_45\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin;C:\Program Files\Java\jdk1.8.0_201;C:\Users\Garant\AppData\Local\Microsoft\WindowsApps;&quot;C:\opencv2\opencv\build\x86\vc10\bin;&quot;;C:\opencv2\opencv\build\x86\vc10\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0;C:\Program Files\Java\jdk1.8.0_201;;."/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk1.8.0_201\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\Mail Enable\BIN;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Java\jdk1.6.0_45\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin;C:\Program Files\Java\jdk1.8.0_201;C:\Users\Garant\AppData\Local\Microsoft\WindowsApps;&quot;C:\opencv2\opencv\build\x86\vc10\bin;&quot;;C:\opencv2\opencv\build\x86\vc10\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin;E:\apache-maven-3.6.0-bin\apache-maven-3.6.0;C:\Program Files\Java\jdk1.8.0_201;;."/>
     <property name="maven.conf" value="E:\apache-maven-3.6.0-bin\apache-maven-3.6.0\bin\../conf"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
@@ -67,7 +67,7 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
   </properties>
-  <testcase classname="controller.command.ConnectingTest" name="testExecute1" time="0.375"/>
+  <testcase classname="controller.command.ConnectingTest" name="testExecute1" time="0.578"/>
   <testcase classname="controller.command.ConnectingTest" name="testExecute2" time="0"/>
   <testcase classname="controller.command.ConnectingTest" name="testExecute3" time="0"/>
   <testcase classname="controller.command.ConnectingTest" name="testExecute4" time="0"/>

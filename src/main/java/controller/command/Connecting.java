@@ -7,7 +7,7 @@ import model.RelaySocket;
 public class Connecting implements ICommand {
 
     private final int BSC = 503;
-    private final long TIME_OUT = 120000;
+    private final long TIME_OUT = 120000; //2 минуты
     private final int FAIL_IN_RELAY = 211;
     private final int SUCCES = 220;
 

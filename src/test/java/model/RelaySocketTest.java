@@ -1,19 +1,25 @@
-/*
 package model;
 
 import modelsListeners.ClientView;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class RelaySocketTest {
 
     RelaySocket rs;
-    ClientView vw;
-    String[] arr = {"127.0.0.1", "25"};
+    ClientView cv;
+    String[] arr = {"", "127.0.0.1", "25"};
+    private final String NEW_LINE = System.getProperty("line.separator");
 
     public RelaySocketTest() {
     }
@@ -28,17 +34,18 @@ public class RelaySocketTest {
 
     @Before
     public void setUp() {
-        vw = Mockito.mock(ClientView.class);
-        rs = new RelaySocket(vw, arr);
+        cv = Mockito.mock(ClientView.class);
+        rs = spy(new RelaySocket(cv, arr));
     }
 
     @After
     public void tearDown() {
+        cv = null;
+        rs = null;
     }
 
     @Test
-    public void testIsContainsMinCommands1() {
-
+    public void testGetRelayHost() {
+        assertEquals(arr[1], rs.getRelayHost());
     }
 }
-*/

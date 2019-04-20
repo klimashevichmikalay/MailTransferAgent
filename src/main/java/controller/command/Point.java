@@ -10,8 +10,7 @@ public class Point implements ICommand {
     private final long TIME_OUT = 600000;
     private final static int BSC = 503;
     private final static int SUCCES = 250;
-    private final static int TRANCSACTION_FAILED = 554;
-    private final static int SYNTAX_ERROR = 500;
+    private final static int TRANCSACTION_FAILED = 554; 
 
     @Override
     public void execute(ClientListener cl, RelaySocket rs) {
