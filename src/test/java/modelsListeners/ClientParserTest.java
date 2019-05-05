@@ -10,6 +10,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ClientParserTest {
 
@@ -109,5 +111,28 @@ public class ClientParserTest {
         doReturn("point").when(cl).getLastMessage();
         doReturn(ClientState.GET_MAIL_INFO).when(cl).getClientState();
         assertEquals("point", cp.parseClient(cl));
+    }
+
+    @Test
+    public void testParseClient12() {
+        doReturn("MAIL FROM: <frfrfr>").when(cl).getLastMessage();
+        assertEquals("MAIL", cp.getCommandWord(cl));
+
+    }
+    
+      @Test
+    public void testParseClient13() {
+        doReturn(".").when(cl).getLastMessage();
+        assertEquals("point", cp.getCommandWord(cl));
+
+    }
+    
+       @Test
+    public void testParseClient14() {
+        doReturn("DATA").when(cl).getLastMessage();
+        assertEquals("DATA", cp.getCommandWord(cl));
+        
+        
+
     }
 }

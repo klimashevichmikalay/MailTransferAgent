@@ -3,6 +3,14 @@ package controller.command;
 import model.ClientListener;
 import model.RelaySocket;
 
+
+/**
+ * Класс для команды из паттерна команд, нужен для обработки сообщения VRFY от
+ * клиента.
+ *
+ * @author Климашевич Николай, 621702
+ * @version 1.0
+ */
 public class Vrfy implements ICommand {
 
     private final static int SUCCES = 250;
@@ -13,6 +21,15 @@ public class Vrfy implements ICommand {
             + "{1}[rR]{1}[oO]{1}[mM]{1}:{1}(<?([a-zA-Z0-9._]{2,63}[@]{1}){1}[a-z]{2,6}"
             + ".{1}[a-z]{2,3}>?,?){1,}";
 
+    
+    /**
+     * Функция - реакция на  строку VRFY от клиента
+     *
+     * @param cl - подключаемый клиент
+     * @param rs - объект с сокетом. Если равен null, то текущий сервер - это
+     * конечный пункт пути, иначе пытаемся подключится на rs, а потом в
+     * зависимости от результата отправляем определенной сообщения
+     */
     @Override
     public void execute(ClientListener cl, RelaySocket rs) {
 

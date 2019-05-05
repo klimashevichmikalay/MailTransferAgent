@@ -12,6 +12,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+/**
+ * Класс визуального представлении сессии.
+ *
+ * @author Климашевич Николай, 621702
+ * @version 1.0
+ */
 public class ClientView {
 
     private final JFrame frame;
@@ -20,6 +26,10 @@ public class ClientView {
     private final JButton clearLog;
     private final JPanel framePanel;
 
+     /**
+     * Инициализация необходимых структур Swing для GUI
+     *     
+     */
     public ClientView() {
         frame = new JFrame();
         frame.setBounds(100, 100, 450, 300);
@@ -53,6 +63,11 @@ public class ClientView {
         frame.setVisible(true);
     }
 
+     /**
+     * Запись сообщения в представление
+     * @param message - записываемое сообщение
+     *     
+     */
     public void setMesage(String message) {
         logTextArea.append(message);
     }

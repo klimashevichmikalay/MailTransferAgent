@@ -3,13 +3,29 @@ package controller.command;
 import model.ClientListener;
 import model.RelaySocket;
 
+/**
+ * Класс для команды из паттерна команд, нужен для обработки сообщения NOOP от
+ * клиента.
+ *
+ * @author Климашевич Николай, 621702
+ * @version 1.0
+ */
 public class Noop implements ICommand {
 
+    /** плохая посл команд, например, если клиент не дожидался ответа, а уже прислал другую команду и последнее сообщение
+    * от клиента изменилось(lastMessage в классе ClientListener)
+     */
     private final static int BSC = 503;
-    private final static int SUCCES = 250;
-    private final static int SYNTAX_ERR = 501;
-    private final  String regExpNoop = "\\A[nN]{1}[oO]{2}[pP]{1}\\z"; 
-    private final static int ERR = 211;
+    private final static int SUCCES = 250;    
+    
+    /**
+     * Функция - реакция на строку NOOP от клиента
+     *
+     * @param cl - подключаемый клиент
+     * @param rs - объект с сокетом. Если равен null, то текущий сервер - это
+     * конечный пункт пути, иначе пытаемся подключится на rs, а потом в
+     * зависимости от результата отправляем определенной сообщения
+     */
     @Override
     public void execute(ClientListener cl, RelaySocket rs) {
 

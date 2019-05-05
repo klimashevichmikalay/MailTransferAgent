@@ -3,19 +3,39 @@ package modelsListeners;
 import model.ClientListener;
 import controller.command.CommandsNames;
 
+/**
+ * Класс обрабатывает строки, полученные от клиента для последующего вызова с
+ * помощью обработанной строки нужной команды из ClientController для обработки
+ * сообщения.
+ *
+ * @author Климашевич Николай, 621702
+ * @version 1.0
+ */
 public class ClientParser {
 
     private String msg;
 
+    /**
+     * Обработка последнего сообщения от клиента
+     *
+     * @param cl - класс общения с клиентом, содержит String lastMessage -
+     * последнее сообщение, с которым работает данная функция
+     * @return имя команды для вызова команды обработки сообщения из
+     * ClientController
+     */
     public String parseClient(ClientListener cl) {
 
         msg = getCommandWord(cl).toLowerCase();
 
+        //если это команда, которая может вызываться
+        //в любой время сессии, то возвращаем сроку с ее названием.
         String qnhr;
         if ((qnhr = checkQNHRV(msg)) != null) {
             return qnhr;
         }
 
+        //если нет, то смотри команды по состоянию сесии
+        //если ничего не нашли, возвращаем unknown - неизвестную команду
         switch (cl.getClientState()) {
 
             case QUIT: {
@@ -52,6 +72,14 @@ public class ClientParser {
         }
     }
 
+    /**
+     * Проверка на команды, которые клиент может писать в любое время, после
+     * любой команды
+     *
+     * @param msg - строка от клиента
+     * @return null при неизвестной команде, строка-команда, если известна
+     * обработчика в паттерке команда в ClientListener
+     */
     private String checkQNHRV(String msg) {
 
         if (msg.equals(CommandsNames.vrfy)) {
@@ -72,7 +100,7 @@ public class ClientParser {
         return null;
     }
 
-    private String getCommandWord(ClientListener cl) {
+    public String getCommandWord(ClientListener cl) {
 
         if (".".equals(cl.getLastMessage())) {
             return CommandsNames.point;
@@ -84,7 +112,15 @@ public class ClientParser {
         return cl.getLastMessage().substring(1);
     }
 
-    private String parseCommunication(String msg) {//нужно дописать комманды      
+    /**
+     * Определение команды клиента при состоянии COMMUNICATION(пользовательский
+     * тип)
+     *
+     * @param msg - строка от клиента
+     * @return null, и нет, иначе строку для вызова обработчика в паттерке
+     * команда в ClientListener
+     */
+    String parseCommunication(String msg) {//нужно дописать комманды      
 
         if (msg.equals(CommandsNames.ehlo)) {
             return CommandsNames.ehlo;
@@ -102,7 +138,7 @@ public class ClientParser {
         return CommandsNames.unknown;
     }
 
-    private String parseMail(String msg) {
+    String parseMail(String msg) {
 
         if (msg.equals(CommandsNames.rcpt)) {
             return CommandsNames.rcpt;

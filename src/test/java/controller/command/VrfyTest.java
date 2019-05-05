@@ -131,4 +131,11 @@ public class VrfyTest {
         verify(cl, times(0)).sendMessage(SUCCES, "OK");
         verify(cl, times(1)).sendMessage(FAIL_IN_RELAY, "VRFY RELAY RCPT.");
     }
+
+    public void testExecute7() {
+        doReturn("vrfy from:<klimashevich.mikalay@mail.ru>").when(cl).getLastMessage();
+        doReturn(false).when(rs).retransmit("vrfy from:<klimashevich.mikalay@mail.ru>", SUCCES);
+        vrfy.execute(cl, null);
+        verify(cl, times(1)).sendMessage(SUCCES, "OK");     
+    }
 }
